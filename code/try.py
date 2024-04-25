@@ -129,6 +129,24 @@ for i, pirate in enumerate(pirates):
 score = 0
 timer = pygame.time.get_ticks()
 
+# # Create a font object
+# font = pygame.font.Font(None, 50)
+
+# current_pirate_index = 0
+# clock = pygame.time.Clock()
+# def home_page(screen, font):
+#     nickname = ""
+#     game_mode = None
+#     game_modes = ["Flicker-oddball", "Flicker+odd"]
+#     input_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2 - 50, 140, 32)
+#     dropdown_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2, 140, 32)
+#     start_button = pygame.Rect(screen.get_width() - 150, screen.get_height() - 50, 140, 32)
+#     color_inactive = pygame.Color('lightskyblue3')
+#     color_active = pygame.Color('dodgerblue2')
+#     color = color_inactive
+#     active = False
+#     dropdown_active = False
+
 # Create a font object
 font = pygame.font.Font(None, 50)
 
@@ -138,38 +156,25 @@ def home_page(screen, font):
     nickname = ""
     game_mode = None
     game_modes = ["Flicker-oddball", "Flicker+odd"]
-    input_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2 - 50, 140, 32)
-    dropdown_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2, 140, 32)
-    start_button = pygame.Rect(screen.get_width() - 150, screen.get_height() - 50, 140, 32)
+    input_box = pygame.Rect(screen.get_width() // 2 - 150, screen.get_height() // 2 - 100, 300, 64)
+    dropdown_box = pygame.Rect(screen.get_width() // 2 - 150, screen.get_height() // 2, 300, 64)
     color_inactive = pygame.Color('lightskyblue3')
     color_active = pygame.Color('dodgerblue2')
     color = color_inactive
     active = False
     dropdown_active = False
+    drop_text = "V"
 
-# Create a font object
-font = pygame.font.Font(None, 50)
-
-current_pirate_index = 0
-clock = pygame.time.Clock()
-def home_page(screen, font):
-    nickname = ""
-    game_mode = None
-    game_modes = ["Flicker-oddball", "Flicker+odd"]
-    input_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2 - 50, 140, 32)
-    dropdown_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2, 140, 32)
-    start_button = pygame.Rect(screen.get_width() - 150, screen.get_height() - 50, 140, 32)
-    color_inactive = pygame.Color('lightskyblue3')
-    color_active = pygame.Color('dodgerblue2')
-    color = color_inactive
-    active = False
-    dropdown_active = False
-    drop_text = "Select Mode"
+    label_name = font.render("Nickname:", True, (255, 255, 255))
+    label_drop = font.render("Select Mode", True, (255, 255, 255))
 
     while True:
         screen.fill((0, 0, 0))
+        screen.blit(label_name, (input_box.x, input_box.y - label_name.get_height()))
+        screen.blit(label_drop, (dropdown_box.x, dropdown_box.y - label_drop.get_height()))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -178,6 +183,9 @@ def home_page(screen, font):
                         nickname = nickname[:-1]
                     else:
                         nickname += event.unicode
+                if event.key == pygame.K_RETURN:  # Check if the Enter key is pressed
+                    if nickname and game_mode:  # Check if both nickname and game_mode are set
+                        return nickname, game_mode  # Return nickname and game_mode to start the game
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
@@ -189,26 +197,19 @@ def home_page(screen, font):
                             game_mode = mode
                             print(mode)
                             
-                            drop_text = mode
-                            screen.blit(dropdown_text, (dropdown_box.x+5, dropdown_box.y+5))
-                            pygame.draw.rect(screen, color, dropdown_box, 2)
+                            drop_text = mode   # Update the drop_text variable with the selected mode
 
                             dropdown_active = False
-                            break
+                           
                 if input_box.collidepoint(event.pos):
                     active = not active
                     dropdown_active = False
                 elif dropdown_box.collidepoint(event.pos):
                     dropdown_active = not dropdown_active
-                elif start_button.collidepoint(event.pos) and nickname and game_mode:
-                    return nickname, game_mode
-                    continue
                 else:
                     active = False
                     dropdown_active = False
                 color = color_active if active else color_inactive
-
-            # screen.fill((0, 0, 0))
 
             if dropdown_active:
                 for i, mode in enumerate(game_modes):
@@ -220,10 +221,6 @@ def home_page(screen, font):
             txt_surface = font.render(nickname, True, color)
             screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
             pygame.draw.rect(screen, color, input_box, 2)
-
-            start_text = font.render("Start", True, (255, 255, 255))
-            screen.blit(start_text, (start_button.x + 5, start_button.y + 5))
-            pygame.draw.rect(screen, color, start_button, 2)
 
             dropdown_text = font.render(drop_text, True, (255, 255, 255))
             screen.blit(dropdown_text, (dropdown_box.x+5, dropdown_box.y+5))
