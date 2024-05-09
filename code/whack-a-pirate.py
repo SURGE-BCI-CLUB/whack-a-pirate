@@ -3,7 +3,7 @@ import pygame
 import random
 import sys
 import numpy as np
-import psychopy
+#import psychopy
 from math import sin, cos, pi
 
 # Initialize Pygame
