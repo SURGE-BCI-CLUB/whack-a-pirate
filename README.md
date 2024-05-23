@@ -34,6 +34,7 @@ This game be free as the wind, but don't ye be forgettin' to give credit to the 
 - Add instructions on start pages 
 - Multiple pirates appearing on the screen at once
 - The clock be tickin’, matey! Ye have a limited time to prove yer pirate-whackin’ prowess.
+
 - Aesthetic changes:
 - Background
 - Better boxes

@@ -3,85 +3,82 @@ import pygame
 import random
 import sys
 import numpy as np
-#import psychopy
 from math import sin, cos, pi
 
-# Initialize Pygame
-pygame.init()
+### DEFINE GLOBALS ###
 
-# Get the screen resolution
-infoObject = pygame.display.Info()
-screen_width = infoObject.current_w
-screen_height = infoObject.current_h
+# Define image paths
+PIRATE_IMAGE_PATHS = [f"images/pirate{i}.png" for i in range(1, 7)]
+SIL_IMAGE_PATHS = [f"images/white_{i}.png" for i in range(1, 7)]
+SKULL_IMAGE_PATH = "images/skull.jpg"
 
-# Set the screen dimensions and make it fullscreen
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
-pygame.display.set_caption("Whack-a-Pirate")
+### DEFINE FUNCTIONS AND CLASSES ###
 
+def initialize_game():
+    pygame.init()
 
+    # Get the screen resolution
+    infoObject = pygame.display.Info()
+    screen_width = infoObject.current_w
+    screen_height = infoObject.current_h
 
-# Load images
-pirate_images = []
-for i in range(1, 7):
-    pirate_image = pygame.image.load(f"images/pirate{i}.png")
-    pirate_images.append(pirate_image)
+    # Set the screen dimensions and make it fullscreen
+    screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+    pygame.display.set_caption("Whack-a-Pirate")
 
-sil_images = []
-for i in range(1, 7):
-    sil_image = pygame.image.load(f"images/white_{i}.png")
-    sil_images.append(sil_image)
+    # Load images
+    pirate_images = [pygame.image.load(path) for path in PIRATE_IMAGE_PATHS]
+    sil_images = [pygame.image.load(path) for path in SIL_IMAGE_PATHS]
 
-skull_image = pygame.image.load("images/skull.jpg")
-skull_image = pygame.transform.scale(skull_image, (pirate_image.get_width(), pirate_image.get_height()))
+    skull_image = pygame.image.load(SKULL_IMAGE_PATH)
+    skull_image = pygame.transform.scale(skull_image, (pirate_images[0].get_width(), pirate_images[0].get_height()))
 
-# Define the number of locations and the distance from the center
-num_locations = 6
-dist_from_ctr = 400 #min(screen_width, screen_height) / 2
-locations = ()
+    # Define the number of locations and the distance from the center
+    num_locations = 6
+    dist_from_ctr = 400
 
-# # get the actual refresh rate of the monitor, in FPS
-# refresh_rate = win.getActualFrameRate(nIdentical=10, nWarmUpFrames=10)
-# win.close()
-# # if refresh_rate is None:
-# #     refresh_rate = 60.0  # if the previous method failed
-# print('Measured monitor refresh rate: %10.3f Hz' % refresh_rate)
+    #freqs
+    refresh_rate = 240
+    frames_per_cycle = range(10, 40 + 1,2)
+    viable_freqs = np.array([refresh_rate / f for f in frames_per_cycle])
 
-# # If refresh rate can't produce the exact requested highlight_duration, round to nearest possible
-# frames_per_highlight = round(highlight_duration * refresh_rate)   
-# print('Requested highlight duration: ', highlight_duration, ' ms')
-# highlight_duration = frames_per_highlight / refresh_rate 
-# print('Actual highlight duration: ', round(highlight_duration, 4), ' ms')
+    num_freqs = num_locations
+    median_alpha = 12
+    flicker_freqs = []
 
-#freqs
-refresh_rate = 240
-frames_per_cycle = range(10, 40 + 1,2)
-viable_freqs = np.array([refresh_rate / f for f in frames_per_cycle])
+    while len(flicker_freqs) < num_freqs:
+        diff = viable_freqs - median_alpha
+        diff = np.abs(diff)
+        min_diff = np.min(diff)
+        min_diff_idx = np.argmin(diff)
+        min_diff_freq = viable_freqs[min_diff_idx]
+        flicker_freqs.append(min_diff_freq)
+        viable_freqs = np.delete(viable_freqs, min_diff_idx)
 
-num_freqs = num_locations
-median_alpha = 12
-flicker_freqs = []
+    # compute frames per cycle for each flicker_freqs
+    frames_per_cycle = [round(refresh_rate / freq) for freq in flicker_freqs]
+    np.random.shuffle(frames_per_cycle)
 
-while len(flicker_freqs) < num_freqs:
-    diff = viable_freqs - median_alpha
-    diff = np.abs(diff)
-    min_diff = np.min(diff)
-    min_diff_idx = np.argmin(diff)
-    min_diff_freq = viable_freqs[min_diff_idx]
-    flicker_freqs.append(min_diff_freq)
-    viable_freqs = np.delete(viable_freqs, min_diff_idx)
+    actual_freqs = [refresh_rate / frames for frames in frames_per_cycle]
+    print('Actual flicker frequencies = ', sorted(actual_freqs))
 
-# compute frames per cycle for each flicker_freqs
-frames_per_cycle = [round(refresh_rate / freq) for freq in flicker_freqs]
-np.random.shuffle(frames_per_cycle)
+    return screen, pirate_images, sil_images, skull_image, num_locations, dist_from_ctr, actual_freqs
 
-actual_freqs = [refresh_rate / frames for frames in frames_per_cycle]
-print('Actual flicker frequencies = ', sorted(actual_freqs))
+class Button:
+    def __init__(self, text, x, y):
+        self.text = text
+        self.x = x
+        self.y = y
+        self.font = pygame.font.Font(None, 36)
+        self.text_surf = self.font.render(self.text, True, (255, 255, 255))
+        self.rect = self.text_surf.get_rect(center=(self.x, self.y))
 
-# Calculate the cycle durations for each frequency (1/frequency)
-# Calculate the cycle durations for each frequency (1/frequency)
+    def draw(self, surface):
+        surface.blit(self.text_surf, self.rect)
 
+    def is_clicked(self, pos):
+        return self.rect.collidepoint(pos)
 
-# Define Pirate class
 class Pirate(pygame.sprite.Sprite):
     def __init__(self, image, sil, skull_image, location, duration):
         super().__init__()
@@ -109,49 +106,6 @@ class Pirate(pygame.sprite.Sprite):
     def draw_silhouette(self, surface):
             surface.blit(self.sil, self.rect)
 
-# Calculate the cycle durations for each frequency (1/frequency)
-durations = [1.0/freq for freq in actual_freqs]
-
-random.shuffle(durations)
-pirates = [Pirate(image, sil, skull_image, None, duration) for image, sil, duration in zip(pirate_images, sil_images, durations)]
-
-# Create pirate sprites with fixed locations
-pirate_sprites = pygame.sprite.Group()
-for i, pirate in enumerate(pirates):
-    angle = 2 * pi * i / num_locations  # Distribute pirates evenly around a circle
-    x = dist_from_ctr * cos(angle) + screen_width / 2
-    y = screen_height / 2 - dist_from_ctr * sin(angle)  # Invert the y-coordinate
-    pirate.location = (x, y)
-    pirate.update()  # Update the rect attribute based on the new location
-    pirate_sprites.add(pirate)
-
-# Initialize score and timer
-score = 0
-timer = pygame.time.get_ticks()
-
-# # Create a font object
-# font = pygame.font.Font(None, 50)
-
-# current_pirate_index = 0
-# clock = pygame.time.Clock()
-# def home_page(screen, font):
-#     nickname = ""
-#     game_mode = None
-#     game_modes = ["Flicker-oddball", "Flicker+odd"]
-#     input_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2 - 50, 140, 32)
-#     dropdown_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2, 140, 32)
-#     start_button = pygame.Rect(screen.get_width() - 150, screen.get_height() - 50, 140, 32)
-#     color_inactive = pygame.Color('lightskyblue3')
-#     color_active = pygame.Color('dodgerblue2')
-#     color = color_inactive
-#     active = False
-#     dropdown_active = False
-
-# Create a font object
-font = pygame.font.Font(None, 50)
-
-current_pirate_index = 0
-clock = pygame.time.Clock()
 def home_page(screen, font):
     nickname = ""
     game_mode = None
@@ -229,35 +183,13 @@ def home_page(screen, font):
             pygame.display.flip()
             clock.tick(60)
 
-
-
-#training phase
-class Button:
-    def __init__(self, text, x, y):
-        self.text = text
-        self.x = x
-        self.y = y
-        self.font = pygame.font.Font(None, 36)
-        self.text_surf = self.font.render(self.text, True, (255, 255, 255))
-        self.rect = self.text_surf.get_rect(center=(self.x, self.y))
-
-    def draw(self, surface):
-        surface.blit(self.text_surf, self.rect)
-
-    def is_clicked(self, pos):
-        return self.rect.collidepoint(pos)
-
-# Initialize Start Game button
-start_button = Button("Start Game", screen_width / 2, screen_height / 2)
-
-# Training period
-# Training period
 def start_training(nickname,game_mode):
         # Get a list of all pirates and shuffle it
     all_pirates = list(pirate_sprites.sprites())
     random.shuffle(all_pirates)
 
     if game_mode == "Flicker-oddball":
+        print('hello')
 
         training = True
         clock = pygame.time.Clock()
@@ -396,39 +328,6 @@ def start_training(nickname,game_mode):
             pirate.visible = False
     else: 
         None
-# In your main function, call the home page function before the game loop
-# nickname, game_mode = home_page(screen, font)
-# if nickname and game_mode:
-#     # Start the training phase
-#     start_training(nickname, game_mode)
-#     game_loop(nickname, game_mode)
-
-# Wait for Start Game button to be clicked
-waiting = True
-while waiting:
-    # Draw Start Game button
-    start_button.draw(screen)
-
-    # Update the display
-    pygame.display.flip()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            waiting = False
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            if start_button.is_clicked(pos):
-                waiting = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
-                waiting = False
-                running = False
-
-
-# Game loop
-running = True
-clock = pygame.time.Clock()
 
 def game_loop(nickname,game_mode):
     global current_pirate_index
@@ -583,6 +482,92 @@ def game_loop(nickname,game_mode):
     else:
         None
 
+### MAIN GAME LOOP ###
+
+# Call the function to initialize the game
+screen, pirate_images, sil_images, skull_image, num_locations, dist_from_ctr, actual_freqs = initialize_game()
+
+# Calculate the cycle durations for each frequency (1/frequency)
+durations = [1.0/freq for freq in actual_freqs]
+
+random.shuffle(durations)
+pirates = [Pirate(image, sil, skull_image, None, duration) for image, sil, duration in zip(pirate_images, sil_images, durations)]
+
+# Create pirate sprites with fixed locations
+pirate_sprites = pygame.sprite.Group()
+for i, pirate in enumerate(pirates):
+    angle = 2 * pi * i / num_locations  # Distribute pirates evenly around a circle
+    x = dist_from_ctr * cos(angle) + screen_width / 2
+    y = screen_height / 2 - dist_from_ctr * sin(angle)  # Invert the y-coordinate
+    pirate.location = (x, y)
+    pirate.update()  # Update the rect attribute based on the new location
+    pirate_sprites.add(pirate)
+
+# Initialize score and timer
+score = 0
+timer = pygame.time.get_ticks()
+
+# # Create a font object
+# font = pygame.font.Font(None, 50)
+
+# current_pirate_index = 0
+# clock = pygame.time.Clock()
+# def home_page(screen, font):
+#     nickname = ""
+#     game_mode = None
+#     game_modes = ["Flicker-oddball", "Flicker+odd"]
+#     input_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2 - 50, 140, 32)
+#     dropdown_box = pygame.Rect(screen.get_width() // 2 - 70, screen.get_height() // 2, 140, 32)
+#     start_button = pygame.Rect(screen.get_width() - 150, screen.get_height() - 50, 140, 32)
+#     color_inactive = pygame.Color('lightskyblue3')
+#     color_active = pygame.Color('dodgerblue2')
+#     color = color_inactive
+#     active = False
+#     dropdown_active = False
+
+# Create a font object
+font = pygame.font.Font(None, 50)
+
+current_pirate_index = 0
+clock = pygame.time.Clock()
+
+# Initialize Start Game button
+start_button = Button("Start Game", screen_width / 2, screen_height / 2)
+
+# In your main function, call the home page function before the game loop
+# nickname, game_mode = home_page(screen, font)
+# if nickname and game_mode:
+#     # Start the training phase
+#     start_training(nickname, game_mode)
+#     game_loop(nickname, game_mode)
+
+# Wait for Start Game button to be clicked
+waiting = True
+while waiting:
+    # Draw Start Game button
+    start_button.draw(screen)
+
+    # Update the display
+    pygame.display.flip()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            waiting = False
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if start_button.is_clicked(pos):
+                waiting = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
+                waiting = False
+                running = False
+
+
+# Game loop
+running = True
+clock = pygame.time.Clock()
+
         
 
     # Quit the game
@@ -593,5 +578,3 @@ if nickname and game_mode:
     # Start the training phase
     start_training(nickname, game_mode)
     game_loop(nickname, game_mode)
-
-
