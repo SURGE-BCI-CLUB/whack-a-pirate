@@ -62,7 +62,7 @@ def initialize_game():
     actual_freqs = [refresh_rate / frames for frames in frames_per_cycle]
     print('Actual flicker frequencies = ', sorted(actual_freqs))
 
-    return screen, pirate_images, sil_images, skull_image, num_locations, dist_from_ctr, actual_freqs
+    return screen, pirate_images, sil_images, skull_image, num_locations, dist_from_ctr, actual_freqs, screen_width, screen_height
 
 class Button:
     def __init__(self, text, x, y):
@@ -485,7 +485,7 @@ def game_loop(nickname,game_mode):
 ### MAIN GAME LOOP ###
 
 # Call the function to initialize the game
-screen, pirate_images, sil_images, skull_image, num_locations, dist_from_ctr, actual_freqs = initialize_game()
+screen, pirate_images, sil_images, skull_image, num_locations, dist_from_ctr, actual_freqs, screen_width, screen_height = initialize_game()
 
 # Calculate the cycle durations for each frequency (1/frequency)
 durations = [1.0/freq for freq in actual_freqs]
@@ -568,10 +568,8 @@ while waiting:
 running = True
 clock = pygame.time.Clock()
 
-        
-
-    # Quit the game
-    pygame.quit()
+# Quit the game
+pygame.quit()
 
 nickname, game_mode = home_page(screen, font)
 if nickname and game_mode:
