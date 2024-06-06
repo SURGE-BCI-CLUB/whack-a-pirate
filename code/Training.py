@@ -10,6 +10,7 @@ from Pirate import *
 
 class Training:
 
+    @staticmethod
     def start_training(nickname ,game_mode, pirate_sprites, screen, start_button):
             # Get a list of all pirates and shuffle it
         

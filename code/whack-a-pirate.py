@@ -9,6 +9,7 @@ from Button import *
 from Pirate import *
 from Game import *
 from Training import *
+from Initialize import *
 
 # Initialize Pygame
 pygame.init()
@@ -26,17 +27,15 @@ pygame.display.set_caption("Whack-a-Pirate")
 
 # Load images
 pirate_images = []
-for i in range(1, 7):
-    pirate_image = pygame.image.load(f"images/pirate{i}.png")
-    pirate_images.append(pirate_image)
+for i in range(1, 7): 
+    Initialize.populateImgArr(f"images/pirate{i}.png", pirate_images)
 
 sil_images = [] #Silhoutte images
 for i in range(1, 7):
-    sil_image = pygame.image.load(f"images/white_{i}.png")
-    sil_images.append(sil_image)
+    Initialize.populateImgArr(f"images/white_{i}.png", sil_images)
 
 skull_image = pygame.image.load("images/skull.jpg")
-skull_image = pygame.transform.scale(skull_image, (pirate_image.get_width(), pirate_image.get_height()))
+skull_image = pygame.transform.scale(skull_image, (pirate_images[0].get_width(), pirate_images[0].get_height()))
 
 # Define the number of locations and the distance from the center
 num_locations = 6
