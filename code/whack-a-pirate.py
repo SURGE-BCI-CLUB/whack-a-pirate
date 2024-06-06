@@ -216,10 +216,12 @@ start_button = Button("Start Game", screen_width / 2, screen_height / 2)
 # Training period
 def start_training(nickname,game_mode):
         # Get a list of all pirates and shuffle it
+    
     all_pirates = list(pirate_sprites.sprites())
     random.shuffle(all_pirates)
 
     if game_mode == "Flicker-oddball":
+        print('hello')
 
         training = True
         clock = pygame.time.Clock()
