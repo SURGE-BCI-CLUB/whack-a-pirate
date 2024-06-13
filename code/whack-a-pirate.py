@@ -18,6 +18,15 @@ screen_height = infoObject.current_h
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 pygame.display.set_caption("Whack-a-Pirate")
 
+# Load the background image (do this with the other image loading code)
+background_image = pygame.image.load("images/pirate-background.png")
+background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+
+ # Blit the background image
+screen.blit(background_image, (0, 0))
+
+ # Update the display
+pygame.display.flip()
 
 
 # Load images
