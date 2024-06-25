@@ -16,9 +16,21 @@ class Game:
         
         
         if game_mode == 'Flicker-oddball':
-
+            game_start_time = pygame.time.get_ticks()
             start_time = pygame.time.get_ticks()
             while running:
+                current_time = pygame.time.get_ticks()
+                
+                if current_time - game_start_time >= 60000:
+                    running = False
+                    Saveinfo.save_user_score_to_csv(nickname, score)
+                    screen.fill((0, 0, 0)) 
+                    pygame.display.flip() 
+                    scoreboard = Scoreboard()
+                    scores = Scoreboard.read_scores_from_csv('user_scores.csv')
+                    Scoreboard.display_scoreboard(screen, scores)
+                    pygame.time.wait(5000) 
+                
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
@@ -33,7 +45,6 @@ class Game:
                             running = False
                 
                 # Update pirate visibility
-                current_time = pygame.time.get_ticks()
                 if current_time - start_time < 2000:  # 2 seconds have passed
                     pirate = pirate_sprites.sprites()[current_pirate_index]
                     if not pirate.clicked:  # Only update visibility if pirate has not been clicked
@@ -62,17 +73,7 @@ class Game:
 
                 # Set the frame rate
                 clock.tick(60)
-                if score > 10:
-                    running = False
-                    
-                    # Display the winning screen
-            if score > 10:
-                running = False
-                Saveinfo.save_user_score_to_csv(nickname, score)
-                scoreboard = Scoreboard()
-                scores = Scoreboard.read_scores_from_csv('user_scores.csv')
-                Scoreboard.display_scoreboard(screen, scores)
-                pygame.time.wait(5000) 
+
                 
         elif game_mode == 'Flicker+odd':
             
