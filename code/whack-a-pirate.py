@@ -10,6 +10,7 @@ from Game import *
 from Training import *
 from Initialize import *
 from Home import *
+from Scoreboard import *
 
 # Initialize Pygame
 pygame.init()
