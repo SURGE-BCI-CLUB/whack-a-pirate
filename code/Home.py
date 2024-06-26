@@ -8,8 +8,14 @@ class Home:
         nickname = ""
         game_mode = None
         game_modes = ["Flicker-oddball", "Flicker+odd"]
-        input_box = pygame.Rect(screen.get_width() // 2 - 150, screen.get_height() // 2 - 100, 300, 64)
-        dropdown_box = pygame.Rect(screen.get_width() // 2 - 150, screen.get_height() // 2, 300, 64)
+        # input_box = pygame.Rect(screen.get_width() // 2 - 150, 
+        #                         screen.get_height() // 2 - 100, 300, 64)
+        # dropdown_box = pygame.Rect(screen.get_width() // 2 - 150, 
+        #                            screen.get_height() // 2, 300, 64)
+        input_box = pygame.Rect((screen.get_width() - 300) // 2, 
+                                (screen.get_height() - 64) // 2 - 82, 300, 64)
+        dropdown_box = pygame.Rect((screen.get_width() - 300) // 2, 
+                                    (screen.get_height() - 64) // 2 + 18, 300, 64)
         color_inactive = pygame.Color('lightskyblue3')
         color_active = pygame.Color('dodgerblue2')
         color = color_inactive
@@ -67,16 +73,16 @@ class Home:
                     for i, mode in enumerate(game_modes):
                         text = font.render(mode, True, (255, 255, 255))
                         rect = pygame.Rect(dropdown_box.x, dropdown_box.y + 32 * (i+1), dropdown_box.width, dropdown_box.height)
-                        pygame.draw.rect(screen, color, rect, 2)
+                        pygame.draw.rect(screen, color, rect, 2, border_radius=10)
                         screen.blit(text, (rect.x, rect.y))
 
                 txt_surface = font.render(nickname, True, color)
                 screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
-                pygame.draw.rect(screen, color, input_box, 2)
+                pygame.draw.rect(screen, color, input_box, 2, border_radius=10)
 
                 dropdown_text = font.render(drop_text, True, (255, 255, 255))
                 screen.blit(dropdown_text, (dropdown_box.x+5, dropdown_box.y+5))
-                pygame.draw.rect(screen, color, dropdown_box, 2)
+                pygame.draw.rect(screen, color, dropdown_box, 2, border_radius=10)
 
                 pygame.display.flip()
                 clock.tick(60)

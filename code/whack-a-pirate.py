@@ -10,6 +10,21 @@ from Game import *
 from Training import *
 from Initialize import *
 from Home import *
+import shutil
+from pathlib import Path
+
+## Clearing the Cache
+def clear_pycache(directory):
+    for pycache in Path(directory).rglob('__pycache__'):
+        try:
+            shutil.rmtree(pycache)
+            print(f"Removed: {pycache}")
+        except OSError as e:
+            print(f"Error: {e.strerror} - {pycache}")
+
+# Call function to clear the Cache
+clear_pycache(Path(__file__).parent)
+
 
 # Initialize Pygame
 pygame.init()
@@ -64,7 +79,6 @@ np.random.shuffle(frames_per_cycle)
 
 actual_freqs = [refresh_rate / frames for frames in frames_per_cycle]
 print('Actual flicker frequencies = ', sorted(actual_freqs))
-
 
 # Calculate the cycle durations for each frequency (1/frequency)
 durations = [1.0/freq for freq in actual_freqs]
