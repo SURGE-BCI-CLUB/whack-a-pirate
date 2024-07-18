@@ -10,7 +10,6 @@ from Game import *
 from Training import *
 from Initialize import *
 from Home import *
-from Scoreboard import *
 import shutil
 from pathlib import Path
 
