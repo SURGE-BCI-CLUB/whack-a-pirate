@@ -2,11 +2,12 @@ import pygame
 import random
 import sys
 import numpy as np
-#import psychopy
+import csv
 from math import sin, cos, pi
 from Button import *
 from Pirate import *
-
+from Saveinfo import *
+from Scoreboard import *
 
 class Game:
     
@@ -15,9 +16,21 @@ class Game:
         
         
         if game_mode == 'Flicker-oddball':
-
+            game_start_time = pygame.time.get_ticks()
             start_time = pygame.time.get_ticks()
             while running:
+                current_time = pygame.time.get_ticks()
+                
+                if current_time - game_start_time >= 60000:
+                    running = False
+                    Saveinfo.save_user_score_to_csv(nickname, score)
+                    screen.fill((0, 0, 0)) 
+                    pygame.display.flip() 
+                    scoreboard = Scoreboard()
+                    scores = Scoreboard.read_scores_from_csv('user_scores.csv')
+                    Scoreboard.display_scoreboard(screen, scores)
+                    pygame.time.wait(5000) 
+                
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
@@ -31,10 +44,7 @@ class Game:
                         if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
                             running = False
                 
-
-
                 # Update pirate visibility
-                current_time = pygame.time.get_ticks()
                 if current_time - start_time < 2000:  # 2 seconds have passed
                     pirate = pirate_sprites.sprites()[current_pirate_index]
                     if not pirate.clicked:  # Only update visibility if pirate has not been clicked
@@ -63,32 +73,7 @@ class Game:
 
                 # Set the frame rate
                 clock.tick(60)
-                if score > 10:
-                    running = False
-                    winning_screen = pygame.Surface((800, 600))  # Adjust the size as needed
-                    winning_screen.fill((0, 0, 0))  # Fill the screen with black
 
-                    # Display the winning screen
-            if score > 10:
-                winning_screen = pygame.Surface((800, 600))  # Adjust the size as needed
-                winning_screen.fill((0, 0, 0))  # Fill the screen with black
-
-                # Render the winning message and final score
-                winning_text = font.render("Congrats, you have won!", True, (255, 255, 255))
-                score_text = font.render(f"Your score is: {score}", True, (255, 255, 255))
-
-                # Blit the text to the winning screen
-                winning_screen.blit(winning_text, (200, 250))  # Adjust the coordinates as needed
-                winning_screen.blit(score_text, (200, 300))  # Adjust the coordinates as needed
-
-                # Blit the winning screen to the main screen
-                screen.blit(winning_screen, (0, 0))
-
-                # Update the display
-                pygame.display.flip()
-
-                # Wait for a few seconds before quitting
-                pygame.time.wait(5000)
                 
         elif game_mode == 'Flicker+odd':
             
