@@ -11,6 +11,7 @@ from Training import *
 from Initialize import *
 from Home import *
 from Scoreboard import *
+from instructions import *
 
 # Initialize Pygame
 pygame.init()
@@ -104,7 +105,12 @@ clock = pygame.time.Clock()
     
 
 nickname, game_mode = Home.home_page(screen, font, clock)
+
 if nickname and game_mode:
     # Start the training phase
-    Training.start_training(nickname, game_mode, pirate_sprites, screen, start_button)
-    Game.game_loop(nickname, game_mode, pirate_sprites, screen, font, start_button, running, current_pirate_index, score, clock)
+    if show_training_instructions(screen, font):
+        
+        Training.start_training(nickname, game_mode, pirate_sprites, screen, start_button)
+        if show_game_instructions(screen, font):
+            
+            Game.game_loop(nickname, game_mode, pirate_sprites, screen, font, start_button, running, current_pirate_index, score, clock)
