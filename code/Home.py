@@ -6,6 +6,10 @@ import csv
 class Home: 
     @staticmethod
     def home_page(screen, font, clock):
+        
+        background_image = pygame.image.load('images/waves_start.jpg')
+        background_image = pygame.transform.scale(background_image, (screen.get_width(), screen.get_height()))
+        
         nickname = ""
         game_mode = None
         game_modes = ["Flicker", "Testing"]
