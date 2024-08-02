@@ -17,187 +17,75 @@ class Training:
         all_pirates = list(pirate_sprites.sprites())
         random.shuffle(all_pirates)
 
-        if game_mode == "Flicker-oddball":
-            print('hello')
-
-            # training = True
-            # clock = pygame.time.Clock()
-
-
-            # for target_pirate in all_pirates:
-            #     training = True
-
-            #     while training:
-            #         # Display silhouette of the "target" pirate for 2 seconds
-            #         start_time = pygame.time.get_ticks()
-            #         while pygame.time.get_ticks() - start_time < 2000:
-            #             for event in pygame.event.get():
-            #                 if event.type == pygame.QUIT:
-            #                     training = False
-            #                 elif event.type == pygame.KEYDOWN:
-            #                     if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
-            #                         training = False
-            #                         pygame.quit()
-            #                         sys.exit()
-                                    
-            #             if not training:
-            #                 break
-            #             screen.fill((0, 0, 0))
-            #             target_pirate.draw_silhouette(screen)
-            #             pygame.display.flip()
-            #             clock.tick(60)
-
-            #         # Flicker each pirate in the shuffled list for 2 seconds
-            #         for pirate in all_pirates:
-            #             # Reset the start time for the flickering phase
-            #             start_time = pygame.time.get_ticks()
-            #             while pygame.time.get_ticks() - start_time < 2000:
-            #                 for event in pygame.event.get():
-            #                     if event.type == pygame.QUIT:
-            #                         training = False
-            #                     elif event.type == pygame.MOUSEBUTTONDOWN:
-            #                         pos = pygame.mouse.get_pos()
-            #                         if start_button.is_clicked(pos):
-            #                             training = False
-            #                     elif event.type == pygame.KEYDOWN:
-            #                         if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
-            #                             training = False
-            #                             pygame.quit()
-            #                             sys.exit()
-
-            #                 # Update pirate visibility
-            #                 current_time = pygame.time.get_ticks()
-            #                 phase = ((current_time - start_time) % (pirate.duration * 1000)) / (pirate.duration * 1000)
-            #                 pirate.visible = np.sin(2 * np.pi * phase) > 0
-
-            #                 # Clear the screen
-            #                 screen.fill((0, 0, 0))
-
-            #                 # Draw current pirate
-            #                 pirate.draw(screen)
-
-            #                 # Update the display
-            #                 pygame.display.flip()
-
-            #                 # Set the frame rate
-            #                 clock.tick(60)
-
-            #             pirate.visible = False
-            #         training = False
-                    
-        elif game_mode == "Flicker":
-            # training = True
-            # clock = pygame.time.Clock()
-            print('hello')
-
-            # # Start the 30 seconds timer
-            # start_time = pygame.time.get_ticks()
-            # while training:
-            #     # Handle events
-            #     for event in pygame.event.get():
-            #         if event.type == pygame.QUIT:
-            #             training = False
-            #         elif event.type == pygame.KEYDOWN:
-            #             if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
-            #                 training = False
-            #                 pygame.quit()
-            #                 sys.exit()
-
-            #     # Check if 30 seconds have passed
-            #     if pygame.time.get_ticks() - start_time >= 30000:
-            #         training = False
-
-            #     # Flicker all pirates
-            #     for pirate in all_pirates:
-            #         current_time = pygame.time.get_ticks()
-            #         phase = ((current_time - start_time) % (pirate.duration * 1000)) / (pirate.duration * 1000)
-            #         pirate.visible = np.sin(2 * np.pi * phase) > 0
-
-            #     # Clear the screen
-            #     screen.fill((0, 0, 0))
-
-            #     # Draw all pirates based on their visibility
-            #     for pirate in all_pirates:
-            #         if pirate.visible:
-            #             pirate.draw(screen)
-
-            #     # Update the display
-            #     pygame.display.flip()
-
-            #     # Control the frame rate
-            #     clock.tick(60)
-
-                        
-        elif game_mode == "Flicker+odd":
+        if game_mode == "Flicker":
             training = True
             clock = pygame.time.Clock()
 
-            # Get a list of all pirates
-            all_pirates = list(pirate_sprites.sprites())
-            pirate_counts = {pirate: 0 for pirate in all_pirates}
+            for target_pirate in all_pirates:
+                training = True
 
-            # Start the flickering phase
-            start_time = pygame.time.get_ticks()
+                while training:
+                    # Display silhouette of the "target" pirate for 2 seconds
+                    start_time = pygame.time.get_ticks()
+                    while pygame.time.get_ticks() - start_time < 2000:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                training = False
+                            elif event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
+                                    training = False
+                                    pygame.quit()
+                                    sys.exit()
+                                    
+                        if not training:
+                            break
+                        screen.fill((0, 0, 0))
+                        target_pirate.draw_silhouette(screen)
+                        pygame.display.flip()
+                        clock.tick(60)
 
-            # Initialize current pirate and its display time
-            current_pirate = random.choice(all_pirates)
-            pirate_counts[current_pirate] += 1
-            current_pirate.visible = True  # Make the current pirate visible
-            pirate_display_time = pygame.time.get_ticks()
+                    # Flicker phase for all pirates simultaneously for 2 seconds
+                    start_time = pygame.time.get_ticks()
+                    while pygame.time.get_ticks() - start_time < 2000:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                training = False
+                            elif event.type == pygame.MOUSEBUTTONDOWN:
+                                pos = pygame.mouse.get_pos()
+                                if start_button.is_clicked(pos):
+                                    training = False
+                            elif event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
+                                    training = False
+                                    pygame.quit()
+                                    sys.exit()
 
-            while any(count < 6 for count in pirate_counts.values()):  # Until each pirate has been selected 6 times
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        training = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
-                        pos = pygame.mouse.get_pos()
-                        if start_button.is_clicked(pos):
-                            training = False
-                    elif event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:  # Check if the key is the Esc key
-                            training = False
-                            pygame.quit()
-                            sys.exit()
+                        # Update visibility for all pirates based on the same phase calculation
+                        current_time = pygame.time.get_ticks()
+                        for pirate in all_pirates:
+                            phase = ((current_time - start_time) % (pirate.duration * 1000)) / (pirate.duration * 1000)
+                            pirate.visible = np.sin(2 * np.pi * phase) > 0
 
-                # Update pirate visibility
-                current_time = pygame.time.get_ticks()
-                for pirate in all_pirates:
-                    if pirate != current_pirate:  # Skip the current pirate
-                        phase = ((current_time - start_time) % (pirate.duration * 1000)) / (pirate.duration * 1000)
-                        pirate.visible = np.sin(2 * np.pi * phase) > 0
+                        # Clear the screen
+                        screen.fill((0, 0, 0))
 
-                # Check if 2 seconds have passed since the current pirate was displayed
-                if pygame.time.get_ticks() - pirate_display_time >= 500:  # 2 seconds
-                    # Select a new pirate to display
-                    current_pirate.visible = False  # Make the previous pirate invisible
-                    available_pirates = [pirate for pirate, count in pirate_counts.items() if count < 6]
-                    if available_pirates:
-                        new_pirate = random.choice(available_pirates)
-                        while new_pirate == current_pirate:
-                            new_pirate = random.choice(available_pirates)
-                        current_pirate = new_pirate
-                        pirate_counts[current_pirate] += 1
-                        current_pirate.visible = True  # Make the new pirate visible
-                        pirate_display_time = pygame.time.get_ticks()
+                        # Draw all pirates
+                        for pirate in all_pirates:
+                            if pirate.visible:
+                                pirate.draw(screen)
 
-                # Clear the screen
-                screen.fill((0, 0, 0))
+                        # Update the display
+                        pygame.display.flip()
 
-                # Draw all pirates
-                for pirate in all_pirates:
-                    if pirate.visible:
-                        pirate.draw_silhouette(screen)
+                        # Set the frame rate
+                        clock.tick(60)
 
-                current_pirate.draw(screen)
-
-                # Update the display
-                pygame.display.flip()
-
-                # Set the frame rate
-                clock.tick(60)
-
-            for pirate in all_pirates:
-                pirate.visible = False
+                    for pirate in all_pirates:
+                        pirate.visible = False
+                    training = False
+                        
+        elif game_mode == "Testing":
+            print('test')
         else: 
             None
 

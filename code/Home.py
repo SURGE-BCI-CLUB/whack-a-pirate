@@ -8,7 +8,7 @@ class Home:
     def home_page(screen, font, clock):
         nickname = ""
         game_mode = None
-        game_modes = ["Flicker", "Flicker-oddball", "Flicker+odd"]
+        game_modes = ["Flicker", "Testing"]
         input_box = pygame.Rect(screen.get_width() // 2 - 150, screen.get_height() // 2 - 100, 300, 64)
         dropdown_box = pygame.Rect(screen.get_width() // 2 - 150, screen.get_height() // 2, 300, 64)
         color_inactive = pygame.Color('lightskyblue3')
